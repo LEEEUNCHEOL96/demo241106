@@ -4,6 +4,8 @@ import com.example.demo241106.domain.article.dto.ArticleDTO;
 import com.example.demo241106.domain.article.entity.Article;
 import com.example.demo241106.domain.article.request.ArticleCreateRequest;
 import com.example.demo241106.domain.article.request.ArticleModifyRequest;
+import com.example.demo241106.domain.article.response.ArticleCreateResponse;
+import com.example.demo241106.domain.article.response.ArticleModifyResponse;
 import com.example.demo241106.domain.article.response.ArticleResponse;
 import com.example.demo241106.domain.article.response.ArticlesResponse;
 import com.example.demo241106.domain.article.service.ArticleService;
@@ -26,53 +28,53 @@ public class ArticleController {
 
     @GetMapping("") // 다건조회
     public RsData<ArticlesResponse> list() {
-        List<ArticleDTO> articleDTOS = new ArrayList<>();
-        Article article = new Article("첫 번째 게시글", "내용입니다.", "작성자");
-        articleDTOS.add(new ArticleDTO(article));
-
-        Article article2 = new Article("두 번째 게시글", "내용입니다.2", "작성자2");
-        articleDTOS.add(new ArticleDTO(article2));
-
-        Article article3 = new Article("세 번째 게시글", "내용입니다.3", "작성자3");
-        articleDTOS.add(new ArticleDTO(article3));
+        List<ArticleDTO> articleDTOS = this.articleService.getList();
 
         return RsData.of("200","게시글 다건 조회 성공", new ArticlesResponse(articleDTOS));
     }
 
 
-    @GetExchange("/{id}") //단건조회
+    @GetMapping("/{id}") //단건조회
     public RsData<ArticleResponse> getArticle(@PathVariable("id") Long id){
-        Article article = new Article("첫 번째 게시글","내용입니다.","작성자");
-        ArticleDTO articleDTO = new ArticleDTO(article);
+        Article article = this.articleService.getArticle(id);
 
+        if(article ==null)
+            return RsData.of("500","%d 번게시물은 존재하지 않습니다.".formatted(id),null);
+
+        ArticleDTO articleDTO = new ArticleDTO(article);
         return RsData.of("200","게시글 단건 조회 성공", new ArticleResponse(articleDTO));
     }
 
     @PostMapping("") // 생성
-    public String create(@Valid @RequestBody ArticleCreateRequest articleCreateRequest){
+    public RsData<ArticleCreateResponse> create(@Valid @RequestBody ArticleCreateRequest articleCreateRequest){
+        Article article = this.articleService.write(articleCreateRequest.getSubject(),articleCreateRequest.getContent(),articleCreateRequest.getAuthor());
 
-        System.out.println(articleCreateRequest.getSubject());
-        System.out.println(articleCreateRequest.getContent());
-        System.out.println(articleCreateRequest.getAuthor());
-
-        return "등록완료";
+        return RsData.of("200","게시글 등록 성공", new ArticleCreateResponse(article));
     }
 
     @PatchMapping("/{id}") // 수정
-    public String modify(@PathVariable("id") Long id, @Valid @RequestBody ArticleModifyRequest articleModifyRequest){
+    public RsData<ArticleModifyResponse> modify(@PathVariable("id") Long id, @Valid @RequestBody ArticleModifyRequest articleModifyRequest){
+        Article article = this.articleService.getArticle(id);
 
-        System.out.println(id);
-        System.out.println(articleModifyRequest.getSubject());
-        System.out.println(articleModifyRequest.getContent());
-        System.out.println(articleModifyRequest.getAuthor());
+        if(article ==null)
+            return RsData.of("500","%d 번게시물은 존재하지 않습니다.".formatted(id),null);
 
-        return "수정";
+        article = this.articleService.update(article,articleModifyRequest.getSubject(),articleModifyRequest.getContent(),articleModifyRequest.getAuthor());
+
+
+        return RsData.of("200","게시글 수정 성공",new ArticleModifyResponse(article));
     }
 
     @DeleteMapping("/{id}")  // 샂게
-    public String delete(@PathVariable("id") Long id){
-        System.out.println(id);
+    public RsData<ArticleResponse> delete(@PathVariable("id") Long id){
+        Article article = this.articleService.getArticle(id);
 
-        return "삭제";
+        if(article ==null)
+            return RsData.of("500","%d 번게시물은 존재하지 않습니다.".formatted(id),null);
+
+        this.articleService.delete(article);
+        ArticleDTO articleDTO = new ArticleDTO(article);
+
+        return RsData.of("200","%d 번 게시물 삭제 성공".formatted(id), new ArticleResponse(articleDTO));
     }
 }
