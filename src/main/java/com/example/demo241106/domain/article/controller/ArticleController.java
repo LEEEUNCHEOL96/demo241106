@@ -2,7 +2,15 @@ package com.example.demo241106.domain.article.controller;
 
 import com.example.demo241106.domain.article.dto.ArticleDTO;
 import com.example.demo241106.domain.article.entity.Article;
+import com.example.demo241106.domain.article.request.ArticleCreateRequest;
+import com.example.demo241106.domain.article.request.ArticleModifyRequest;
+import com.example.demo241106.domain.article.response.ArticleResponse;
+import com.example.demo241106.domain.article.response.ArticlesResponse;
 import com.example.demo241106.domain.article.service.ArticleService;
+import com.example.demo241106.global.RsData.RsData;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.service.annotation.GetExchange;
@@ -17,7 +25,7 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @GetMapping("") // 다건조회
-    public List<ArticleDTO> list() {
+    public RsData<ArticlesResponse> list() {
         List<ArticleDTO> articleDTOS = new ArrayList<>();
         Article article = new Article("첫 번째 게시글", "내용입니다.", "작성자");
         articleDTOS.add(new ArticleDTO(article));
@@ -28,39 +36,35 @@ public class ArticleController {
         Article article3 = new Article("세 번째 게시글", "내용입니다.3", "작성자3");
         articleDTOS.add(new ArticleDTO(article3));
 
-        return articleDTOS;
+        return RsData.of("200","게시글 다건 조회 성공", new ArticlesResponse(articleDTOS));
     }
 
+
     @GetExchange("/{id}") //단건조회
-    public ArticleDTO getArticle(@PathVariable("id") Long id){
+    public RsData<ArticleResponse> getArticle(@PathVariable("id") Long id){
         Article article = new Article("첫 번째 게시글","내용입니다.","작성자");
         ArticleDTO articleDTO = new ArticleDTO(article);
 
-        return articleDTO;
+        return RsData.of("200","게시글 단건 조회 성공", new ArticleResponse(articleDTO));
     }
 
     @PostMapping("") // 생성
-    public String create(@RequestParam("subject") String subject,
-                         @RequestParam("content") String content,
-                         @RequestParam("author") String author){
+    public String create(@Valid @RequestBody ArticleCreateRequest articleCreateRequest){
 
-        System.out.println(subject);
-        System.out.println(content);
-        System.out.println(author);
+        System.out.println(articleCreateRequest.getSubject());
+        System.out.println(articleCreateRequest.getContent());
+        System.out.println(articleCreateRequest.getAuthor());
 
-        return "등록";
+        return "등록완료";
     }
 
     @PatchMapping("/{id}") // 수정
-    public String modify(@PathVariable("id") Long id,
-                         @RequestParam("subject") String subject,
-                         @RequestParam("content") String content,
-                         @RequestParam("author") String author){
+    public String modify(@PathVariable("id") Long id, @Valid @RequestBody ArticleModifyRequest articleModifyRequest){
 
         System.out.println(id);
-        System.out.println(subject);
-        System.out.println(content);
-        System.out.println(author);
+        System.out.println(articleModifyRequest.getSubject());
+        System.out.println(articleModifyRequest.getContent());
+        System.out.println(articleModifyRequest.getAuthor());
 
         return "수정";
     }
