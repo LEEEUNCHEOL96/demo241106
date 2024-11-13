@@ -72,4 +72,55 @@ public class CommentController {
         CommentDTO commentDTO = new CommentDTO(comment);
         return RsData.of("200", "%d 번 댓글 삭제 성공".formatted(id), new CommentResponse(commentDTO));
     }
+
+    // 대댓글 생성
+    @PostMapping("/{parentCommentId}/replies")
+    @Operation(summary = "대댓글 생성")
+    public RsData<CommentCreateResponse> createReply(
+            @PathVariable("parentCommentId") Long parentCommentId,
+            @Valid @RequestBody CommentCreateRequest commentCreateRequest) {
+
+        Comment replyComment = this.commentService.writeReply(
+                parentCommentId,
+                commentCreateRequest.getContent(),
+                commentCreateRequest.getAuthor()
+        );
+
+        return RsData.of("200", "대댓글 등록 성공", new CommentCreateResponse(replyComment));
+    }
+    // 대댓글 수정
+    @PatchMapping("/{parentCommentId}/replies/{replyId}")
+    @Operation(summary = "대댓글 수정")
+    public RsData<CommentModifyResponse> modifyReply(
+            @PathVariable("parentCommentId") Long parentCommentId,
+            @PathVariable("replyId") Long replyId,
+            @Valid @RequestBody CommentModifyRequest commentModifyRequest) {
+
+        Comment replyComment = commentService.getReplyByParentIdAndReplyId(parentCommentId, replyId);
+
+        if (replyComment == null) {
+            return RsData.of("500", "%d 번 대댓글은 존재하지 않습니다.".formatted(replyId), null);
+        }
+
+        replyComment = commentService.update(replyComment, commentModifyRequest.getContent(), commentModifyRequest.getAuthor());
+        return RsData.of("200", "대댓글 수정 성공", new CommentModifyResponse(replyComment));
+    }
+
+    // 대댓글 삭제
+    @DeleteMapping("/{parentCommentId}/replies/{replyId}")
+    @Operation(summary = "대댓글 삭제")
+    public RsData<CommentResponse> deleteReply(
+            @PathVariable("parentCommentId") Long parentCommentId,
+            @PathVariable("replyId") Long replyId) {
+
+        Comment replyComment = commentService.getReplyByParentIdAndReplyId(parentCommentId, replyId);
+
+        if (replyComment == null) {
+            return RsData.of("500", "%d 번 대댓글은 존재하지 않습니다.".formatted(replyId), null);
+        }
+
+        commentService.delete(replyComment);
+        CommentDTO replyDTO = new CommentDTO(replyComment);
+        return RsData.of("200", "%d 번 대댓글 삭제 성공".formatted(replyId), new CommentResponse(replyDTO));
+    }
 }

@@ -56,4 +56,27 @@ public class CommentService {
     public void delete(Comment comment) {
         commentRepository.delete(comment);
     }
+
+    // 대댓글 생성 메소드 추가
+    public Comment writeReply(Long parentCommentId, String content, String author) {
+        // 부모 댓글 조회
+        Comment parentComment = commentRepository.findById(parentCommentId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 부모 댓글이 존재하지 않습니다."));
+
+        // 대댓글 생성
+        Comment replyComment = Comment.builder()
+                .content(content)
+                .author(author)
+                .article(parentComment.getArticle()) // 부모 댓글의 Article로 설정
+                .parent(parentComment) // 부모 댓글 설정
+                .build();
+
+        // 대댓글 저장
+        return commentRepository.save(replyComment);
+    }
+    // 부모 댓글 ID와 대댓글 ID로 특정 대댓글 조회
+    public Comment getReplyByParentIdAndReplyId(Long parentCommentId, Long replyId) {
+        return commentRepository.findByIdAndParentId(replyId, parentCommentId)
+                .orElse(null);
+    }
 }
