@@ -13,4 +13,6 @@ public class CommentCreateRequest {
     private String content;
     @NotBlank
     private String author;
+
+public class CommentCreateRequest {
 }
