@@ -21,6 +21,7 @@ public class Comment extends BaseEntity {
     @ManyToOne//(fetch = FetchType.LAZY)
     @JoinColumn//(name = "article_id")
     private Article article;  // 댓글이 속한 게시글
+
     private String content;  // 댓글 내용
 
     private String author;

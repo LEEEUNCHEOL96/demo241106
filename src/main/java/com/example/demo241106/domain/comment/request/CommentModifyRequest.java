@@ -6,9 +6,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CommentCreateRequest {
+public class CommentModifyRequest {
     @NotBlank
     private String content;
     @NotBlank
     private String author;
+
 }
