@@ -2,7 +2,9 @@ package com.example.demo241106.domain.comment.dto;
 
 import com.example.demo241106.domain.comment.entity.Comment;
 import lombok.Getter;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +16,13 @@ public class CommentDTO {
     // 대댓글
     private List<CommentDTO> replies;
 
+    private final LocalDateTime createdDate;
+
+    @LastModifiedDate
+    private final LocalDateTime modifiedDate;
+
+
+
     public CommentDTO(Comment comment) {
         this.id = comment.getId();
         this.content = comment.getContent();
@@ -22,5 +31,7 @@ public class CommentDTO {
         this.replies = comment.getReplies().stream()
                 .map(CommentDTO::new)
                 .collect(Collectors.toList());
+        this.createdDate = comment.getCreatedDate();
+        this.modifiedDate = comment.getModifiedDate();
     }
 }
