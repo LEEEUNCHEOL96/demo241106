@@ -26,8 +26,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/demo241106/articles", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-//
+@RequestMapping(value = "/api/demo241106/articles")//, produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+// swagger 주소 : http://localhost:8080/swagger-ui/index.html
 @Tag(name = "ApiV2ArticleController", description = "게시글 CRUD API")
 public class ArticleController {
     private final ArticleService articleService;
