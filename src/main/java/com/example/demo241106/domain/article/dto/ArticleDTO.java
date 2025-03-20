@@ -25,6 +25,9 @@ public class ArticleDTO {
     private final String author;
     private List<CommentDTO> comments; // 댓글 목록 추가
 
+    // 좋아요 수
+    private int likesCount;
+
     private final LocalDateTime createdDate;
 
     @LastModifiedDate

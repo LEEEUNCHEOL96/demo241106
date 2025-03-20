@@ -88,4 +88,27 @@ public class ArticleController {
 
         return RsData.of("200","%d 번 게시물 삭제 성공".formatted(id), new ArticleResponse(articleDTO));
     }
+
+    @PostMapping("/{id}/like") // 좋아요 추가
+    @Operation(summary = "게시글 좋아요")
+    public RsData<ArticleResponse> likeArticle(@PathVariable("id") Long id) {
+        articleService.likeArticle(id);
+
+        Article article = articleService.getArticle(id);
+        ArticleDTO articleDTO = new ArticleDTO(article);
+
+        return RsData.of("200", "게시글에 좋아요를 추가했습니다.", new ArticleResponse(articleDTO));
+    }
+
+    @DeleteMapping("/{id}/like") // 좋아요 취소
+    @Operation(summary = "게시글 좋아요 취소")
+    public RsData<ArticleResponse> unLikeArticle(@PathVariable("id") Long id) {
+        articleService.unLikeArticle(id);
+
+        Article article = articleService.getArticle(id);
+        ArticleDTO articleDTO = new ArticleDTO(article);
+
+        return RsData.of("200", "게시글에서 좋아요를 취소했습니다.", new ArticleResponse(articleDTO));
+    }
+
 }

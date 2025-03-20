@@ -23,6 +23,9 @@ public class Article extends BaseEntity {
     private String content;
     private String author;
 
+    // 좋아요 수
+    private int likes = 0;
+
     // 댓글 리스트 추가
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;

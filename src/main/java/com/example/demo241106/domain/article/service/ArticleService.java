@@ -53,4 +53,20 @@ public class ArticleService {
     public void delete(Article article) {
         this.articleRepository.delete(article);
     }
+
+    public void likeArticle(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+
+        article.setLikes(article.getLikes() + 1);
+        articleRepository.save(article);
+    }
+
+    public void unLikeArticle(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+
+        article.setLikes(article.getLikes() - 1);
+        articleRepository.save(article);
+    }
 }
