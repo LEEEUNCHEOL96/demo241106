@@ -1,5 +1,5 @@
 # demo241106
-
+// 확인
 # PostMan
 ##  GET /api/demo241106/articles
 - [x]  모든 게시글의 목록을 조회합니다.
